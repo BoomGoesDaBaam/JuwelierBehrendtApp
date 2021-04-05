@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Juwelier Behrendt</string>
+    <string-array name="brands">
+        <item>no brand selected</item>
+        <item>Fossil</item>
+        <item>Tissot</item>
+        <item>Casio</item>
+        <item>Maurice Lacroix</item>
+    </string-array>
+    <string-array name="jewelryType">
+        <item>wrist watch</item>
+        <item>clock</item>
+        <item>chain</item>
+        <item>ring</item>
+        <item>Earring</item>
+        <item>Maurice Lacroix</item>
+    </string-array>
+</resources>

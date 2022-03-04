@@ -6,24 +6,34 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimaryLIGHT"
-    tools:context=".Options">
+    tools:context=".Logic.Options">
 
     <Button
         android:id="@+id/bCatalog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="catalog" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:text="@string/catalog" />
 
     <Button
         android:id="@+id/bMeeting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="meeting" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:text="meeting"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/bAddProduct"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="add product" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:text="@string/add_product" />
 
 </LinearLayout>

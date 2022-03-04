@@ -1,4 +1,4 @@
-package com.example.juwelierbehrendt;
+package com.example.juwelierbehrendt.ExternalLibs;
 
 
 import android.app.Application;
@@ -8,8 +8,8 @@ import com.backendless.BackendlessUser;
 
 public class StartApplication extends Application
 {
-    public static final String APPLICATION_ID = "4BF690EB-CCB1-3331-FF23-647DD2DFA100";
-    public static final String API_KEY = "AB897D9A-8E6C-4026-A45B-80DF607645C2";
+    public static final String APPLICATION_ID = "A4D5BCB8-1BF2-225C-FF5E-C1AC3B479500";
+    public static final String API_KEY = "1E31FAEF-EFA1-4C03-92DD-9A8B6977F416";
     public static final String SERVER_URL = "https://eu-api.backendless.com";
 
     public static BackendlessUser user;
@@ -20,5 +20,9 @@ public class StartApplication extends Application
                 APPLICATION_ID,
                 API_KEY );
         Backendless.setUrl( SERVER_URL );
+    }
+    public static EasyNW getEasyNW()
+    {
+        return new EasyNW("https://eu.backendlessappcontent.com/"+ StartApplication.APPLICATION_ID+"/"+StartApplication.API_KEY+"/files/");
     }
 }

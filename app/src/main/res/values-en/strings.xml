@@ -1,21 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Juwelier Behrendt</string>
     <string name="edit_product">Edit Product</string>
-    <string name="name_of_the_product">name of the product</string>
-    <string name="description">description</string>
-    <string name="kind">kind</string>
-    <string name="nothing_selected">nothing selected</string>
+    <string name="name_of_the_product">Name of the product:</string>
+    <string name="description">Description:</string>
+    <string name="kind">Kind:</string>
+    <string name="nothing_selected">-</string>
     <string name="edit_kind">edit Kind</string>
     <string name="add_kind">add Kind</string>
-    <string name="brand">brand</string>
+    <string name="brand">Brand:</string>
     <string name="edit_brand">Edit Brand</string>
     <string name="add_brand">add brand</string>
-    <string name="amount">Amount</string>
+    <string name="amount">Amount:</string>
     <string name="left">LEFT</string>
     <string name="right">RIGHT</string>
     <string name="delete_picture">Delete Picture</string>
     <string name="add_picture">Add picture</string>
-    <string name="price">Price</string>
+    <string name="price">Price in €:</string>
     <string name="discount">Discount</string>
     <string name="save">save</string>
     <string name="delete">delete</string>
@@ -37,7 +38,6 @@
     <string name="errorCode">Errorcode</string>
     <string name="catalog">catalog</string>
     <string name="search_for_a_piece">search for a piece</string>
-
 
     <string-array name="brands">
         <item>no brand selected</item>

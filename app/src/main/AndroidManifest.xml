@@ -3,22 +3,24 @@
     package="com.example.juwelierbehrendt">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".StartApplication"
+        android:name=".ExternalLibs.StartApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/juwbehr"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/juwbehr"
         android:supportsRtl="true"
         android:theme="@style/Theme.JuwelierBehrendt">
-        <activity android:name=".ProductDisplay" />
-        <activity android:name=".EditProduct" />
-        <activity android:name=".Catalog" />
-        <activity android:name=".Options" />
-        <activity android:name=".Register" />
+        <activity android:name=".Logic.AddString"></activity>
+        <activity android:name=".Logic.ProductDisplay" />
+        <activity android:name=".Logic.EditProduct" />
+        <activity android:name=".Logic.Catalog" />
+        <activity android:name=".Auth.Login" />
+        <activity android:name=".Auth.Register" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".Login">
+        <activity android:name=".Logic.Options">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

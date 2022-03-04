@@ -1,4 +1,4 @@
-package com.example.juwelierbehrendt;
+package com.example.juwelierbehrendt.Logic;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.juwelierbehrendt.R;
+
+//Errorcode 1 = Added Product, for uuid, wasnt deleted after backbutton was pressed
 public class Options extends AppCompatActivity {
 
     private Button bCatalog, bMeeting, bAddProduct;

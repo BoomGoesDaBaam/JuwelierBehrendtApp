@@ -1,4 +1,4 @@
-package com.example.juwelierbehrendt;
+package com.example.juwelierbehrendt.Auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +20,9 @@ import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.local.UserIdStorageFactory;
+import com.example.juwelierbehrendt.Logic.Options;
+import com.example.juwelierbehrendt.R;
+import com.example.juwelierbehrendt.ExternalLibs.StartApplication;
 
 public class Login extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.juwelierbehrendt;
+package com.example.juwelierbehrendt.RecyclerView;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.juwelierbehrendt.EntitiesAndValueObjects.Product;
+import com.example.juwelierbehrendt.R;
 
 import java.util.ArrayList;
 
@@ -49,7 +52,7 @@ public class EntryAdapter extends RecyclerView.Adapter<EntryAdapter.ViewHolder>
                 public ViewHolder(@NonNull final View itemView) {
                         super(itemView);
                         discount = itemView.findViewById(R.id.tV_discount);
-                        nameOfClock = itemView.findViewById(R.id.tV_nameUhr);
+                        nameOfClock = itemView.findViewById(R.id.tv_ListitemStringg);
                         brand = itemView.findViewById(R.id.tV_brand);
 
                         itemView.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +88,7 @@ public class EntryAdapter extends RecyclerView.Adapter<EntryAdapter.ViewHolder>
         @Override
         public void onBindViewHolder(@NonNull EntryAdapter.ViewHolder viewHolder, int index) {
 
-                viewHolder.itemView.setTag(products.get(index));
+                viewHolder.itemView.setTag(products.get(index));                //needed!!
                 viewHolder.brand.setText(products.get(index).getBrand());
                 viewHolder.nameOfClock.setText(products.get(index).getName());
                 viewHolder.discount.setText(String.valueOf(products.get(index).getDiscount()));

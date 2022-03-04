@@ -6,21 +6,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimaryLIGHT"
-    tools:context=".Catalog">
+    tools:context=".Logic.Catalog">
 
     <EditText
         android:id="@+id/eTSearchName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="search for a piece"
+        android:hint="@string/search_for_a_piece"
         android:inputType="textPersonName" />
-
-    <Spinner
-        android:id="@+id/spinnerBrands"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listProducts"

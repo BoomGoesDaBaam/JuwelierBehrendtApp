@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Juwelier Behrendt</string>
+    <string name="edit_product">Produkt bearbeiten</string>
+    <string name="name_of_the_product">Name des Produktes:</string>
+    <string name="description">Beschreibung:</string>
+    <string name="kind">Art des Produktes:</string>
+    <string name="nothing_selected">-</string>
+    <string name="edit_kind">Art bearbeiten</string>
+    <string name="add_kind">Art hinzufügen</string>
+    <string name="brand">Marke:</string>
+    <string name="edit_brand">Marke bearbeiten</string>
+    <string name="add_brand">Marke hinzufügen</string>
+    <string name="amount">Anzahl:</string>
+    <string name="left">LINKS</string>
+    <string name="right">RECHTS</string>
+    <string name="delete_picture">Bild löschen</string>
+    <string name="add_picture">Bild hinzufügen</string>
+    <string name="price">Preis in €:</string>
+    <string name="discount">Rabat:</string>
+    <string name="save">Speichern</string>
+    <string name="delete">Löschen</string>
+    <string name="add_product">Produkt hinzufügen</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="picture">Bild</string>
+    <string name="pleasePickProdName">Bitte ein Name für das Produkt wählen!</string>
+    <string name="pleasePickProdPrice">Bitte einen Preis für das Produkt wählen!</string>
+
+    <string name="priceInvalidInput">Preis ist ungültig!</string>
+    <string name="nameInvalidInput">Name ist ungültig!</string>
+    <string name="disInvalidInput">Discount ist ungültig!</string>
+
+    <string name="prodAdded">Produkt hinzugefügt!</string>
+    <string name="prodDeleted">Produkt gelöscht!</string>
+    <string name="prodEdited">Produkt bearbeitet!</string>
+
+    <string name="error">Error</string>
+    <string name="errorCode">Errorcode</string>
+    <string name="catalog">Katalog</string>
+    <string name="search_for_a_piece">Hier nach Produkt suchen</string>
+
+
+    <string-array name="brands">
+        <item>no brand selected</item>
+        <item>Fossil</item>
+        <item>Tissot</item>
+        <item>Casio</item>
+        <item>Maurice Lacroix</item>
+    </string-array>
+    <string-array name="jewelryType">
+        <item>wrist watch</item>
+        <item>clock</item>
+        <item>chain</item>
+        <item>ring</item>
+        <item>Earring</item>
+        <item>Maurice Lacroix</item>
+    </string-array>
+
+
+</resources>

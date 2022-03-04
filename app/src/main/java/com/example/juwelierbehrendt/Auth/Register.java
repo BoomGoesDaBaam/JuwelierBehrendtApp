@@ -1,4 +1,4 @@
-package com.example.juwelierbehrendt;
+package com.example.juwelierbehrendt.Auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +18,7 @@ import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessException;
 import com.backendless.exceptions.BackendlessFault;
+import com.example.juwelierbehrendt.R;
 
 public class Register extends AppCompatActivity {
 
@@ -70,7 +71,8 @@ public class Register extends AppCompatActivity {
                                 @Override
                                 public void handleResponse(BackendlessUser response) {
                                     Toast.makeText(Register.this, "User successfully registered!", Toast.LENGTH_SHORT).show();
-
+                                    showProgress(false);
+                                    finish();
                                 }
 
                                 @Override

@@ -25,6 +25,13 @@
     <string name="picture">Picture</string>
     <string name="pleasePickProdName">Please pick a name for the product!</string>
     <string name="pleasePickProdPrice">Please pick a price for the product!</string>
+    <string name="edited">edited</string>
+    <string name="deleted">deleted</string>
+    <string name="pic_deleted">Picture deleted!</string>
+    <string name="pic_not_deleted">Picture not deleted!</string>
+    <string name="save_failed">Save failed!</string>
+    <string name="picture_saved">Picture saved!</string>
+    <string name="picture_not_saved">Picture not saved!</string>
 
     <string name="priceInvalidInput">Price is invalid!</string>
     <string name="nameInvalidInput">Name is invalid!</string>

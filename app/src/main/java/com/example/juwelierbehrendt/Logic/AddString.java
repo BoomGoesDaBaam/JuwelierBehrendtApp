@@ -43,24 +43,25 @@ public class AddString extends AppCompatActivity {
         kind = new Kind();
         if(action.equals("edit brand"))
         {
-            tVAddStringHead.setText("Edit Brand");
+            tVAddStringHead.setText(R.string.edit_brand);
             string2Save.setObjectId(objectID);
             isBrandAction=true;
 
         }else if(action.equals("add brand"))
         {
-            tVAddStringHead.setText("Add Brand");
+            tVAddStringHead.setText(R.string.add_brand);
             bEditStringDelete.setVisibility(View.GONE);
             isBrandAction=true;
         }else if(action.equals("add kind"))
         {
-            tVAddStringHead.setText("Add Kind");
+            tVAddStringHead.setText(R.string.add_kind);
             bEditStringDelete.setVisibility(View.GONE);
         }else if(action.equals("edit kind"))
         {
-            tVAddStringHead.setText("Edit Kind");
+            tVAddStringHead.setText(R.string.edit_kind);
             kind.setObjectId(objectID);
         }
+
         bEditStringSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
@@ -70,14 +71,14 @@ public class AddString extends AppCompatActivity {
                     Backendless.Data.of(Brand.class).save(string2Save, new AsyncCallback<Brand>() {
                         @Override
                         public void handleResponse(Brand response) {
-                            Toast.makeText(AddString.this, "Brand edited!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.brand + R.string.edited +"!", Toast.LENGTH_SHORT).show();
                             setResult(RESULT_OK);
                             finish();
                         }
 
                         @Override
                         public void handleFault(BackendlessFault fault) {
-                            Toast.makeText(AddString.this, "Error:" + fault.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.error+": " + fault.getMessage(), Toast.LENGTH_SHORT).show();
 
                         }
                     });
@@ -88,14 +89,14 @@ public class AddString extends AppCompatActivity {
                     Backendless.Data.of(Kind.class).save(kind, new AsyncCallback<Kind>() {
                         @Override
                         public void handleResponse(Kind response) {
-                            Toast.makeText(AddString.this, "Kind edited!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.kind + R.string.edited + "!", Toast.LENGTH_SHORT).show();
                             setResult(RESULT_OK);
                             finish();
                         }
 
                         @Override
                         public void handleFault(BackendlessFault fault) {
-                            Toast.makeText(AddString.this, "Error:" + fault.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.error+": " + fault.getMessage(), Toast.LENGTH_SHORT).show();
 
                         }
                     });
@@ -110,14 +111,14 @@ public class AddString extends AppCompatActivity {
                     Backendless.Data.of(Brand.class).remove(string2Save, new AsyncCallback<Long>() {
                         @Override
                         public void handleResponse(Long response) {
-                            Toast.makeText(AddString.this, "Brand deleted!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.brand + R.string.deleted + "!", Toast.LENGTH_SHORT).show();
                             setResult(RESULT_OK);
                             finish();
                         }
 
                         @Override
                         public void handleFault(BackendlessFault fault) {
-                            Toast.makeText(AddString.this, "Error: " + fault.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.error+": " + fault.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -126,14 +127,14 @@ public class AddString extends AppCompatActivity {
                     Backendless.Data.of(Kind.class).remove(kind, new AsyncCallback<Long>() {
                         @Override
                         public void handleResponse(Long response) {
-                            Toast.makeText(AddString.this, "Kind deleted!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.kind + R.string.delete +"!", Toast.LENGTH_SHORT).show();
                             setResult(RESULT_OK);
                             finish();
                         }
 
                         @Override
                         public void handleFault(BackendlessFault fault) {
-                            Toast.makeText(AddString.this, "Error: " + fault.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddString.this, R.string.error+": " + fault.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

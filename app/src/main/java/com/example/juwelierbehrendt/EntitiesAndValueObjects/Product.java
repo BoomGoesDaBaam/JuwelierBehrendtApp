@@ -2,7 +2,6 @@ package com.example.juwelierbehrendt.EntitiesAndValueObjects;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +10,7 @@ import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
 import com.example.juwelierbehrendt.ExternalLibs.EasyNW;
 import com.example.juwelierbehrendt.ExternalLibs.StartApplication;
+import com.example.juwelierbehrendt.Logic.EditProduct;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,14 +40,16 @@ public class Product {
         //boolean brandComp=brand.toLowerCase().contains(s);
         //boolean nameComp=brand.toLowerCase().contains(s);
         //return true;
-        return  name.toLowerCase().contains(s) ||
-                brand.toLowerCase().contains(s) ||
-                what.toLowerCase().contains(s) ||
-                description.toLowerCase().contains(s);// ||
+        String lowerCaseS = s.toLowerCase();
+        return  name.toLowerCase().contains(lowerCaseS) ||
+                brand.toLowerCase().contains(lowerCaseS) ||
+                what.toLowerCase().contains(lowerCaseS) ||
+                objectId.toLowerCase().contains(lowerCaseS) ||
+                description.toLowerCase().contains(lowerCaseS);// ||
                 //objectId.toString().toLowerCase().contains(s);*
     }
 
-    public void copyAssignment(Product rhs)
+    public void copyAssigne(Product rhs)
     {
         pics = rhs.pics;
         name = rhs.name;
@@ -96,7 +98,10 @@ public class Product {
     public void setObjectId(String objectId) {
         this.objectId = objectId;
     }
-
+    public Product(Product rhs)
+    {
+        this.copyAssigne(rhs);
+    }
     public Product()
     {
         name = "-";
@@ -121,13 +126,15 @@ public class Product {
     {
         return pics.get(index);
     }
-    public void addPic(Bitmap pic) {
+    public synchronized void addPic(Bitmap pic, boolean saveToBackend) {
         pics.add(pic);
-        hasNPics++;
+        if(saveToBackend)
+            hasNPics++;
     }
-    public void deletePic(int index) {
+    public synchronized void deletePic(int index, boolean saveToBackend) {
         this.pics.remove(index);
-        hasNPics--;
+        if(saveToBackend)
+            hasNPics--;
     }
 
     public String getWhat() {
@@ -171,13 +178,15 @@ public class Product {
     public void setPrice(float price) {
         this.price = price;
     }
+    /*
     public void loadAll(TextView tVDisplayName,
                         TextView tVDisplayKind,
                         TextView tVDisplayBrand,
                         TextView tVDisplayAmount,
                         TextView tVDisplayPrice,
                         TextView tVDisplayDiscount,
-                        TextView tVDisplayDescription)
+                        TextView tVDisplayDescription
+                        )
     {
         loadData(tVDisplayName, tVDisplayKind, tVDisplayBrand, tVDisplayAmount, tVDisplayPrice, tVDisplayDiscount, tVDisplayDescription);
         loadPictures(false);
@@ -210,9 +219,12 @@ public class Product {
             @Override
             public void handleResponse(Product response) {
                 ArrayList<Bitmap> pics = getPics();
-                copyAssignment(response);
+                copyAssigne(response);
                 setPics(pics);
                 loadBasicComponents(tVDisplayName, tVDisplayKind, tVDisplayBrand, tVDisplayAmount, tVDisplayPrice, tVDisplayDiscount, tVDisplayDescription);
+
+                loadPictures(false);
+               // EditProduct.adjustButtons(ivPic, tvPiccount, product,picIndex,true);
             }
             @Override
             public void handleFault(BackendlessFault fault) {
@@ -220,6 +232,7 @@ public class Product {
             }
         });
     }
+    */
     public void loadPictures(boolean deleteAllPics)
     {
         if(hasNPics == 0)
@@ -229,30 +242,29 @@ public class Product {
 
         Thread[] threads = new Thread[hasNPics];
         for(int i=0;i<hasNPics;i++) {
+            final int finalI = i;
             threads[i] = new Thread(() -> {
                 int keepLoading = 0;
-                int curIndex = 0;
-                while (keepLoading < 1) {
-                    boolean succeded = LoadPicture(curIndex, deleteAllPics);
+                while (keepLoading < 3) {
+                    boolean succeded = LoadPicture(this, finalI, deleteAllPics);
                     if (succeded) {
-                        curIndex++;
+                        break;
                     } else if (!succeded) {
                         keepLoading++;
                     }
                 }
             });
         }
-        int nPics = threads.length;
-        for(int i=0;i<nPics;i++) {
+        for(int i=0;i<hasNPics;i++) {
             threads[i].start();
         }
-
-            boolean working = true;
+        boolean working = true;
         int nFinished = 0;
+
         while(working)
         {
             try {
-                Thread.sleep(100);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -269,39 +281,12 @@ public class Product {
                 working = false;
             }
         }
-       // Thread threadLoadPictures = new Thread(()->{
-        /*
-            int keepLoading = 0;
-            int curIndex=0;
-            while(keepLoading < 1) {
-                boolean succeded = LoadPicture(curIndex, deleteAllPics);
-                if(succeded)
-                {
-                    curIndex ++;
-                }else if (!succeded) {
-                    keepLoading++;
-                }
-            }
-           /*
-        });
-        threadLoadPictures.start();
-
-        while(threadLoadPictures.isAlive())
-        {
-            try {
-                Thread.sleep(2000);
-            }catch (Exception e)
-            {
-
-            }
-        }
-        */
     }
-    public boolean LoadPicture(int picID, boolean delete)   //(delete == true) => delete pic from backendless
+    public static boolean LoadPicture(Product curP, int picID, boolean delete)   //(delete == true) => delete pic from backendless
     {                                                       //(delete == true) => load pic into this
         for(int i=0;i<3;i++) {
             EasyNW easyNWtmp = new EasyNW("https://eu.backendlessappcontent.com/"+ StartApplication.APPLICATION_ID+"/"+StartApplication.API_KEY+"/files/");
-            String action = "ProductsPics/Product" + objectId + "Pic" + String.valueOf(picID);
+            String action = "ProductsPics/Product" + curP.getObjectId() + "Pic" + String.valueOf(picID);
             EasyNW.nwResponse response1 = easyNWtmp.sendNwRequest("GET", action, new HashMap<>(), new HashMap<>());
             Bitmap bmp = BitmapFactory.decodeByteArray(response1.getBytes(), 0, response1.getBytes().length);
             if (response1.getSucceeded() && bmp != null) {
@@ -310,9 +295,8 @@ public class Product {
                     easyNWtmp.sendNwRequest("DELETE", action, new HashMap<>(), new HashMap<>());
                 }
                 else
-
                 {
-                    addPic(bmp);
+                    curP.addPic(bmp, false);
                 }
                 return true;
                 //float scaling = ((float)screenWidth/2)/bmp.getWidth();
@@ -326,5 +310,104 @@ public class Product {
     {
         loadPictures(true);
         pics = new ArrayList<>();
+    }
+
+    static int savedTimes = 0;
+    public void savePictures()
+    {
+        /*
+        Thread[] threads = new Thread[hasNPics];
+        try {
+            for (int i = 0; i < hasNPics; i++) {
+                final int finalI = i;
+                threads[i] = new Thread(() -> {
+                    //START
+                    boolean succeeded = false;
+                    String filename = "Product" + getObjectId() + "Pic" + finalI;
+
+                    for (int x = 0; x < 1; x++) {
+                        Backendless.Files.Android.upload(getPics().get(finalI),
+                                Bitmap.CompressFormat.PNG,
+                                100,
+                                filename,
+                                "ProductsPics",
+                                true,
+                                new AsyncCallback<BackendlessFile>() {
+                                    @Override
+                                    public void handleResponse(final BackendlessFile backendlessFile) {
+                                        savedSucceeded++;
+                                    }
+
+                                    @Override
+                                    public void handleFault(BackendlessFault backendlessFault) {
+
+                                    }
+                                });
+                    }
+                    //END
+                });
+            }
+
+            for (int i = 0; i < hasNPics; i++) {
+                threads[i].start();
+            }
+
+
+            boolean working = true;
+
+            while (working) {
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (savedSucceeded == hasNPics) {
+                    working = false;
+                }
+            }
+        }catch (Exception e)
+        {
+            int owr=23;
+        }
+        return;
+        */
+        /*
+        busy = true;
+        savedTimes=0;
+        boolean waiting = false;
+
+        for(int i=0;i<getPics().size();i++) {
+            waiting = true;
+            String filename ="Product"+getObjectId()+"Pic"+i;
+            Backendless.Files.Android.upload( getPics().get(i),
+                    Bitmap.CompressFormat.PNG,
+                    100,
+                    filename,
+                    "ProductsPics",
+                    true,
+                    new AsyncCallback<BackendlessFile>()
+                    {
+                        @Override
+                        public void handleResponse( final BackendlessFile backendlessFile )
+                        {
+                            savedTimes++;
+                            //if(savedTimes == getPics().size())
+                            //{
+                            //    Toast.makeText(EditProduct.this, "Images saved!", Toast.LENGTH_SHORT).show();
+                            //}
+                            waiting = false;
+                            busy = false;
+                        }
+
+                        @Override
+                        public void handleFault( BackendlessFault backendlessFault )
+                        {
+                            Toast.makeText(EditProduct.this, "File not saved", Toast.LENGTH_SHORT).show();
+                            waiting = false;
+                            busy = false;
+                        }
+                    });
+
+         */
     }
 }

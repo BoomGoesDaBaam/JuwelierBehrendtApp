@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -29,7 +30,6 @@ import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
 import com.backendless.files.BackendlessFile;
 import com.backendless.persistence.DataQueryBuilder;
-import com.example.juwelierbehrendt.ExternalLibs.EasyNW;
 import com.example.juwelierbehrendt.EntitiesAndValueObjects.Brand;
 import com.example.juwelierbehrendt.EntitiesAndValueObjects.Kind;
 import com.example.juwelierbehrendt.EntitiesAndValueObjects.Product;
@@ -37,11 +37,15 @@ import com.example.juwelierbehrendt.R;
 import com.example.juwelierbehrendt.RecyclerView.EntryAdapterStringDisplay;
 
 import java.io.IOException;
+import java.lang.reflect.Executable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
-public class EditProduct extends AppCompatActivity implements AdapterView.OnItemSelectedListener, EntryAdapterStringDisplay.ItemClicked{
+import lombok.AllArgsConstructor;
+
+public class EditProduct extends AppCompatActivity implements AdapterView.OnItemSelectedListener, EntryAdapterStringDisplay.ItemClicked, Callable<Product> {
 
     private static final int PICK_IMAGE = 1;
     private static final int CHANGE_BRAND = 2;
@@ -58,7 +62,6 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
     Product product;
     String action = "-", brand="", nameOfProduct="", objectID="";
     int picIndex=0,savedTimes=0;
-    boolean waiting;
     boolean busy = false;
     boolean saveProduct = false;
     //Recyclerview
@@ -98,31 +101,8 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
         else if(action.equals("EDIT"))
         {
             tVHeadline.setText(R.string.edit_product);
-
-            Backendless.Data.of(Product.class).findById(objectID, new AsyncCallback<Product>() {
-                        @Override
-                        public void handleResponse(Product response) {
-                            ArrayList<Bitmap> pics = product.getPics();
-                            product.copyAssignment(response);
-                            product.setPics(pics);
-                            brand = response.getBrand();
-                            nameOfProduct = response.getName();
-                            eTprice.setText(String.valueOf(product.getPrice()));
-                            eTDiscount.setText(String.valueOf(product.getDiscount()));
-                            tvBrand.setText(product.getBrand());
-                            tvKind.setText(product.getWhat());
-                            etNameOfProduct.setText(product.getName());
-                            eTDescription.setText(product.getDescription());
-                            etEditProductAmount.setText(String.valueOf(product.getAmount()));
-
-                            product.loadPictures(false);
-                        }
-
-                        @Override
-                        public void handleFault(BackendlessFault fault) {
-
-                        }
-                    });
+            product = pullProduct(objectID, iVProd, tvEditProdPiccount, picIndex, true
+                    , new ViewsInitilizer(etNameOfProduct, tvKind,tvBrand, etEditProductAmount, eTprice, eTDiscount, eTDescription));
         }
         loadListener();
     }
@@ -130,18 +110,19 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
         Backendless.Files.remove("ProductsPics/Product" + objectID + "Pic" + String.valueOf(picIndex), new AsyncCallback<Integer>() {
             @Override
             public void handleResponse(Integer response) {
-                Toast.makeText(EditProduct.this, "Pic deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditProduct.this, R.string.pic_deleted, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void handleFault(BackendlessFault fault) {
-                Toast.makeText(EditProduct.this, "Pic not deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditProduct.this, R.string.pic_not_deleted, Toast.LENGTH_SHORT).show();
             }
         });
     }
     //help methods
-    public void adjustButtons(boolean resetPic)
+    public static void adjustButtons(ImageView iVProd, TextView tvEditProdPiccount, Product product, int picIndex, boolean resetPic)
     {
+        /*
         if(picIndex > 0)
         {
             //bLeft.setVisibility(View.VISIBLE);
@@ -162,31 +143,71 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
         {
             //bRight.setVisibility(View.INVISIBLE);
         }
+         */
+
         if(product.getPics().size() > 0 && resetPic) {
+            iVProd.setVisibility(View.VISIBLE);
             iVProd.setImageBitmap(product.getPics().get(picIndex));
         }
         if(product.getPics().size() > 0)
-        tvEditProdPiccount.setText("Picture ("+String.valueOf(picIndex+1)+"/"+product.getPics().size()+")");
+        {
+            tvEditProdPiccount.setText(iVProd.getContext().getText(R.string.picture)+": ("+String.valueOf(picIndex+1)+"/"+product.getPics().size()+")");
+        }
         else
-            tvEditProdPiccount.setText("Picture (0/0)");
+            tvEditProdPiccount.setText(iVProd.getContext().getText(R.string.picture)+": (0/0)");
 
     }
-    public void saveData(@StringRes int successResponse)
+
+    static Product staticProd;
+    public static Product pullProduct(String objectID,
+                                     ImageView iVProd,
+                                     TextView tvEditProdPiccount,
+                                     int picIndex,
+                                     boolean resetPic,
+                                     ViewsInitilizer viewsInitilizer)
     {
-        saveProduct=true;
-        Backendless.Data.of(Product.class).save(product, new AsyncCallback<Product>() {
+        staticProd = new Product();
+        Backendless.Data.of(Product.class).findById(objectID, new AsyncCallback<Product>() {
             @Override
             public void handleResponse(Product response) {
-                Toast.makeText(EditProduct.this, successResponse, Toast.LENGTH_SHORT).show();
-                product.copyAssignment(response);
-                savePics();
-                setResult(RESULT_OK);
-                finish();
+                ArrayList<Bitmap> pics = staticProd.getPics();
+                staticProd.copyAssigne(response);
+                staticProd.setPics(pics);
+
+                staticProd.loadPictures(false);
+                adjustButtons(iVProd, tvEditProdPiccount, staticProd,picIndex,resetPic);
+                viewsInitilizer.initilize(staticProd);
             }
 
             @Override
             public void handleFault(BackendlessFault fault) {
-                int K =23;
+
+            }
+        });
+        return staticProd;
+    }
+    public void saveData()
+    {
+        saveData(0, false);
+    }
+    public void saveData(@StringRes int successResponse, boolean terminateActivity)
+    {
+        savePics();
+        Backendless.Data.of(Product.class).save(product, new AsyncCallback<Product>() {
+            @Override
+            public void handleResponse(Product response) {
+                if(successResponse != 0)
+                    Toast.makeText(EditProduct.this, successResponse, Toast.LENGTH_SHORT).show();
+                if(terminateActivity)
+                {
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            }
+
+            @Override
+            public void handleFault(BackendlessFault fault) {
+                Toast.makeText(EditProduct.this, R.string.save_failed, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -195,7 +216,6 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
         busy = true;
         savedTimes=0;
         for(int i=0;i<product.getPics().size();i++) {
-            waiting = true;
             String filename ="Product"+product.getObjectId()+"Pic"+i;
             Backendless.Files.Android.upload( product.getPics().get(i),
                     Bitmap.CompressFormat.PNG,
@@ -211,21 +231,19 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
                             savedTimes++;
                             if(savedTimes == product.getPics().size())
                             {
-                                Toast.makeText(EditProduct.this, "Images saved!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EditProduct.this, R.string.picture_saved, Toast.LENGTH_SHORT).show();
                             }
-                            waiting = false;
                             busy = false;
                         }
 
                         @Override
                         public void handleFault( BackendlessFault backendlessFault )
                         {
-                            Toast.makeText(EditProduct.this, "File not saved", Toast.LENGTH_SHORT).show();
-                            waiting = false;
+                            Toast.makeText(EditProduct.this, R.string.picture_not_saved, Toast.LENGTH_SHORT).show();
                             busy = false;
                         }
                     });
-            
+
         }
     }
     //Spinner
@@ -247,11 +265,10 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 //iVProd.setImageBitmap(bitmap);
-                product.addPic(bitmap);
-                tvEditProdPiccount.setText("Picture ("+String.valueOf(picIndex+1)+"/"+product.getPics().size()+")");
-                adjustButtons(true);
+                product.addPic(bitmap, true);
                 savePics();
-                //adjustButtons(true);
+                saveData();
+                adjustButtons(iVProd, tvEditProdPiccount, product,picIndex,true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -396,8 +413,6 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
     {
         //#1
         brands = new ArrayList<>();
-        brands.add("Brand 1");
-        brands.add("Brand 2");
         recyclerViewBrand = findViewById(R.id.recyV_Brand);
         recyclerViewBrand.setHasFixedSize(true);
         layoutManagerBrand = new LinearLayoutManager(this);
@@ -407,8 +422,6 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
         loadBrands();
         //#2
         kinds = new ArrayList<>();
-        kinds.add("Brand 1");
-        kinds.add("Brand 2");
         recyclerViewKind = findViewById(R.id.recyV_Kind);
         recyclerViewKind.setHasFixedSize(true);
         layoutManagerKind = new LinearLayoutManager(this);
@@ -473,10 +486,11 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
             @Override
             public void onClick(View v) {
                 if(product.getPics().size() > 0 && picIndex >= 0 && picIndex < product.getPics().size()){
-
                     delPicFromDataBase(product.getPics().size()-1);
-                    product.deletePic(picIndex);
-                    savePics();
+                    product.deletePic(picIndex, true);
+
+
+                    saveData();
                     picIndex--;
                     if(picIndex < 0)
                     {
@@ -489,8 +503,7 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
                     {
                         iVProd.setImageBitmap(null);
                     }
-                    adjustButtons(true);
-                    tvEditProdPiccount.setText(R.string.picture + " ("+String.valueOf(picIndex+1)+"/"+product.getPics().size()+")");
+                    adjustButtons(iVProd, tvEditProdPiccount, product,picIndex,true);
                 }
             }
         });
@@ -502,8 +515,7 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
                 {
                     picIndex--;
                 }
-                adjustButtons(true);
-                tvEditProdPiccount.setText(R.string.picture + " ("+String.valueOf(picIndex+1)+"/"+product.getPics().size()+")");
+                adjustButtons(iVProd, tvEditProdPiccount, product,picIndex,true);
             }
         });
         bRight.setOnClickListener(new View.OnClickListener() {
@@ -513,7 +525,7 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
                 {
                     picIndex++;
                 }
-                adjustButtons(true);
+                adjustButtons(iVProd, tvEditProdPiccount, product,picIndex,true);
             }
         });
 
@@ -562,10 +574,10 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
                 }
                 //
                 if(action.equals("ADD")) {
-                    saveData(R.string.prodAdded);
+                    saveData(R.string.prodAdded, true);
                 }
                 if(action.equals("EDIT")) {
-                    saveData(R.string.prodEdited);
+                    saveData(R.string.prodEdited, true);
                 }
                 //Product p = Backendless.Data.of(Product.class).findFirst();
                 //p.setPrice(399f);
@@ -613,7 +625,7 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
                 startActivityForResult(i, CHANGE_KIND);
             }
         });
-        adjustButtons(true);
+        adjustButtons(iVProd, tvEditProdPiccount, product,picIndex,true);
     }
     public void setLocale(String language)
     {
@@ -650,5 +662,10 @@ public class EditProduct extends AppCompatActivity implements AdapterView.OnItem
                 }
             });
         }
+    }
+
+    @Override
+    public Product call() throws Exception {
+        return null;
     }
 }

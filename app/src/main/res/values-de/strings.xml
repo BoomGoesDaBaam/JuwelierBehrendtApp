@@ -25,6 +25,13 @@
     <string name="picture">Bild</string>
     <string name="pleasePickProdName">Bitte ein Name für das Produkt wählen!</string>
     <string name="pleasePickProdPrice">Bitte einen Preis für das Produkt wählen!</string>
+    <string name="edited">bearbeitet</string>
+    <string name="deleted">gelöscht</string>
+    <string name="pic_deleted">Bild gelöscht!</string>
+    <string name="pic_not_deleted">Bild nicht gelöscht!</string>
+    <string name="save_failed">Speichern fehlgeschlagen!</string>
+    <string name="picture_saved">Bild gespeichert!</string>
+    <string name="picture_not_saved">Bild nicht gespeichert!</string>
 
     <string name="priceInvalidInput">Preis ist ungültig!</string>
     <string name="nameInvalidInput">Name ist ungültig!</string>
@@ -34,8 +41,8 @@
     <string name="prodDeleted">Produkt gelöscht!</string>
     <string name="prodEdited">Produkt bearbeitet!</string>
 
-    <string name="error">Error</string>
-    <string name="errorCode">Errorcode</string>
+    <string name="error">Fehler</string>
+    <string name="errorCode">Fehlercode</string>
     <string name="catalog">Katalog</string>
     <string name="search_for_a_piece">Hier nach Produkt suchen</string>
 

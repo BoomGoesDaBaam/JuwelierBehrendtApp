@@ -30,7 +30,7 @@ public class EasyNW {
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
-    public static class nwResponse {
+    public class nwResponse {
         boolean succeeded=false;
         String response="nothing";
         byte[] bytes;
@@ -60,10 +60,10 @@ public class EasyNW {
     }
 
     String url;
-    static boolean succeeded=false;
-    static boolean answerRecieved=false;
-    static String stringResponse="";
-    static byte[] responseBytes;
+    boolean succeeded=false;
+    boolean answerRecieved=false;
+    String stringResponse="";
+    byte[] responseBytes;
     String email, pw;
     public EasyNW(String url) {
         this.url = url;
@@ -118,7 +118,7 @@ public class EasyNW {
         Request request = builder.build();
         return sendNetworkRequest(request);
     }
-    public static nwResponse sendNetworkRequest(Request request) {
+    public nwResponse sendNetworkRequest(Request request) {
 
         final OkHttpClient client = new OkHttpClient();
         answerRecieved=false;
@@ -154,7 +154,7 @@ public class EasyNW {
                 e.printStackTrace();
             }
         }
-        return new nwResponse(succeeded, responseBytes);
+        return new EasyNW.nwResponse(succeeded, responseBytes);
     }
 }
 

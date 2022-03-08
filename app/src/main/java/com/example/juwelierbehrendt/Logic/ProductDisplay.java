@@ -4,22 +4,24 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.backendless.Backendless;
+import com.backendless.async.callback.AsyncCallback;
+import com.backendless.exceptions.BackendlessFault;
 import com.example.juwelierbehrendt.EntitiesAndValueObjects.Product;
 import com.example.juwelierbehrendt.R;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 public class ProductDisplay extends AppCompatActivity {
-
     Button bEdit,bRight,bLeft;
     String objectID;    //productID
     Product product = new Product();
@@ -32,6 +34,7 @@ public class ProductDisplay extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_display);
+
         bEdit = findViewById(R.id.bEditProduct);
         tVDisplayName= findViewById(R.id.tVDisplayName);
         tVDisplayKind= findViewById(R.id.tVDisplayKind);
@@ -65,7 +68,7 @@ public class ProductDisplay extends AppCompatActivity {
                 {
                     picIndex--;
                 }
-                adjustButtons(true);
+                EditProduct.adjustButtons(ivPic, tvPiccount, product,picIndex,true);
             }
         });
         bRight.setOnClickListener(new View.OnClickListener() {
@@ -75,13 +78,25 @@ public class ProductDisplay extends AppCompatActivity {
                 {
                     picIndex++;
                 }
-                adjustButtons(true);
+                EditProduct.adjustButtons(ivPic, tvPiccount, product,picIndex,true);
             }
         });
-        product.setObjectId(objectID);
-        product.loadAll(tVDisplayName, tVDisplayKind, tVDisplayBrand, tVDisplayAmount, tVDisplayPrice, tVDisplayDiscount, tVDisplayDescription);
 
-        adjustButtons(true);
+        Backendless.Data.of(Product.class).findById(objectID, new AsyncCallback<Product>() {
+            @Override
+            public void handleResponse(Product response) {
+                ArrayList<Bitmap> pics = product.getPics();
+                product.copyAssigne(response);
+                product.setPics(pics);
+                product.loadPictures(false);
+
+                loadProduct();
+            }
+            @Override
+            public void handleFault(BackendlessFault fault) {
+                int k=23;
+            }
+        });
     }
 
     @Override
@@ -90,39 +105,6 @@ public class ProductDisplay extends AppCompatActivity {
         tVDisplayPrice.setText(tVDisplayPrice.getText() + " (€):");
         tVDisplayDiscount.setText(tVDisplayDiscount.getText() + ":");
         tVDisplayAmount.setText(tVDisplayAmount.getText() + ":");
-    }
-
-
-
-    public void adjustButtons(boolean resetPic) {
-        /*
-        if (picIndex > 0) {
-            //bLeft.setVisibility(View.VISIBLE);
-        } else {
-            // bLeft.setVisibility(View.INVISIBLE);
-        }
-        if (picIndex + 1 < product.getPics().size()) {
-            try {
-                //bRight.setVisibility(View.VISIBLE);
-            } catch (Exception e) {
-                int K = 23;
-            }
-        } else {
-            //bRight.setVisibility(View.INVISIBLE);
-        }
-        */
-        if (product.getPics().size() > 0 && resetPic) {
-            ivPic.setVisibility(View.VISIBLE);
-            ivPic.setImageBitmap(product.getPicAt(picIndex));
-        }
-        if(product.getPics().size() == 0)
-        {
-            tvPiccount.setText("No Pictures");
-        }
-        else
-        {
-            tvPiccount.setText("Picture (" + String.valueOf(picIndex + 1) + "/" + product.getPics().size() + ")");
-        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -134,9 +116,13 @@ public class ProductDisplay extends AppCompatActivity {
         }
         if(requestCode == RESULT_EDIT && resultCode == RESULT_OK)
         {
-            product.setPics(new ArrayList<>());
-            product.loadAll(tVDisplayName, tVDisplayKind, tVDisplayBrand, tVDisplayAmount, tVDisplayPrice, tVDisplayDiscount, tVDisplayDescription);
-            adjustButtons(true);
+            loadProduct();
         }
+    }
+    public void loadProduct()
+    {
+        product = EditProduct.pullProduct(objectID, ivPic, tvPiccount, picIndex, true,
+                new ViewsInitilizer(tVDisplayName, tVDisplayKind,tVDisplayBrand, tVDisplayAmount, tVDisplayPrice, tVDisplayDiscount, tVDisplayDescription));
+        EditProduct.adjustButtons(ivPic, tvPiccount, product,picIndex,true);
     }
 }
